@@ -186,6 +186,10 @@
             <input type="text" id="withdraw-phone" placeholder="Enter Phone Number" />
             <button onclick="withdrawPoints()">Withdraw</button>
             <p id="withdraw-status"></p>
+            <div id="withdraw-history" style="margin-top: 20px; text-align: left;">
+    <h4 style="color: orange;">Withdrawal History</h4>
+    <ul id="history-list" style="font-size: 13px; padding-left: 15px;"></ul>
+            </div>
         </div>
     </div>
 
@@ -277,6 +281,36 @@
             saveUserData();
 
             const message = `Withdrawal Request from ${telegramUserName}:\nAmount: ${amount} points\nPayment Method: ${paymentMethod}\nPhone: ${phoneNumber}`;
+            
+            function saveWithdrawalHistory(amount, method, phone) {
+    const historyKey = getUserKey('withdraw-history');
+    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+
+    const newEntry = {
+        date: new Date().toLocaleString(),
+        amount,
+        method,
+        phone
+    };
+
+    history.push(newEntry);
+    localStorage.setItem(historyKey, JSON.stringify(history));
+    renderWithdrawalHistory();
+}
+
+function renderWithdrawalHistory() {
+    const historyKey = getUserKey('withdraw-history');
+    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+
+    const list = document.getElementById('history-list');
+    list.innerHTML = '';
+    history.slice().reverse().forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.date} - ${item.amount} pts via ${item.method} to ${item.phone}`;
+        list.appendChild(li);
+    });
+        }
+            saveWithdrawalHistory(amount, paymentMethod, phoneNumber);   
             sendWithdrawRequestToAdmin(message);
 
             document.getElementById('withdraw-status').textContent = 'Withdrawal request sent!';
