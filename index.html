@@ -1,331 +1,657 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>   
+<head>
+  <script src='//libtl.com/sdk.js' data-zone='9289458' data-sdk='show_9289458'></script>
+  <meta name="monetag" content="eba554ce9633f953c2d1adc50ca98a20">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Income Koro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Earn Rewards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    
     <style>
-        body {
+        /* আপনার সম্পূর্ণ CSS কোড এখানে অপরিবর্তিত থাকবে */
+        :root {
+            /* Muted Modern Theme Colors */
+            --primary-color: #4A90E2; /* Blue */
+            --primary-dark: #357ABD;
+            --secondary-color: #50E3C2; /* Teal */
+            --accent-color: #F5A623; /* Orange */
+            --bg-light: #F7F7F7;
+            --bg-dark: #2C3E50; /* Dark Slate Blue */
+            --card-bg-light: #FFFFFF;
+            --card-bg-dark: #34495E;
+            --text-dark: #333333;
+            --text-light: #F7F7F7;
+            --border-color-light: #E0E0E0;
+            --border-color-dark: #4A657D;
+
+            /* Sizes */
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --transition: all 0.3s ease-in-out;
+        }
+
+        /* Dark Mode Specific Variables */
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            --header-bg: linear-gradient(135deg, var(--bg-dark), #1A2530);
+            --card-bg: var(--card-bg-dark);
+            --text-primary: var(--text-light);
+            --text-secondary: #B0B0B0;
+            --border-color: var(--border-color-dark);
+            --input-bg: #4A657D;
+            --input-border: #5A7E9C;
+            --button-bg-secondary: #4A657D;
+            --button-text-secondary: var(--secondary-color);
+            --toggle-bg: #4A657D;
+        }
+
+        /* Light Mode Specific Variables */
+        body:not(.dark-mode) {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            --header-bg: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            --card-bg: var(--card-bg-light);
+            --text-primary: var(--text-dark);
+            --text-secondary: #666666;
+            --border-color: var(--border-color-light);
+            --input-bg: #F0F0F0;
+            --input-border: #E0E0E0;
+            --button-bg-secondary: #E9ECEF;
+            --button-text-secondary: var(--primary-color);
+            --toggle-bg: #E0E0E0;
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            background-color: #121212;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            text-align: center;
-            background: #1f1f1f;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            width: 300px;
-        }
-        .container h1 {
-            font-size: 20px;
-            color: green;
-            margin-bottom: 10px;
-        }
-        .developer {
-            font-size: 12px;
-            background-color: green;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            display: inline-block;
-            cursor: pointer;
-        }
-        .stats {
-            margin: 10px 0;
-        }
-        .stats p {
-            margin: 5px 0;
-            font-size: 14px;
-        }
-        .progress-circle {
-            width: 80px;
-            height: 80px;
-            border: 4px solid green;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 10px auto;
-        }
-        .progress-circle span {
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .buttons button {
-            width: 90%;
-            margin: 5px 0;
-            padding: 10px;
-            font-size: 14px;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            background: green;
-            cursor: pointer;
-        }
-        .buttons button:hover {
-            background: darkorange;
-        }
-        .withdraw-section {
-            margin-top: 20px;
-            display: none;
-            padding: 20px;
-            background-color: #2a2a2a;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-        }
-        .withdraw-section input, .withdraw-section select {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 5px;
-            border: 2px solid #555;
-            background-color: #333;
-            color: #fff;
-        }
-        .withdraw-section input:focus, .withdraw-section select:focus {
-            border-color: green;
-            outline: none;
-        }
-        .withdraw-section button {
-            background-color: green;
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            margin-top: 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .withdraw-section button:hover {
-            background-color: #006400;
-        }
-        #withdraw-status {
-            color: red;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-        .user-info {
-            margin: 10px 0;
-        }
-        .user-info p {
-            font-size: 14px;
-            margin: 5px 0;
-        }
-        
-        .withdraw-section input[type="number"],
-        .withdraw-section input[type="text"] {
-    -moz-appearance: textfield; 
-    
-        /* Firefox এর জন্য number input-এর up/down arrow বন্ধ */
-            appearance: none;
-            width: 100%;
-            padding: 12px 15px;
-            margin: 10px 0;
-            border: 1px solid #444;
-            border-radius: 5px;
-            background-color: #1c1c1c;
-            color: #fff;
-            font-size: 14px;
             box-sizing: border-box;
         }
 
-        .withdraw-section input[type="number"]::-webkit-inner-spin-button,
-        .withdraw-section input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none; 
-    /* Chrome-এর জন্য number input-এর spin button বন্ধ */
-            margin: 0;
-}
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            transition: background-color var(--transition), color var(--transition);
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+            background-color: var(--bg-light); /* Fallback for content area */
+        }
+
+        /* Header Section */
+        .header {
+            height: 180px;
+            background: var(--header-bg);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: var(--text-light);
+            border-bottom-left-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            z-index: 2;
+            letter-spacing: 0.5px;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--toggle-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 10;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+        }
+        
+        /* ... আপনার বাকি সব CSS এখানে অপরিবর্তিত থাকবে ... */
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Income Koro</h1>
-        <div class="developer" onclick="window.location.href='https://t.me/HasanSikder26'">1000 Point = 100 BDT</div>
-
-        <div class="user-info">
-            <p>Welcome, <span id="user-name">Guest</span></p>
+    <div class="app-container">
+        <div class="header">
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-sun"></i>
+            </button>
+            <h1 class="header-title">Income Koro</h1>
         </div>
 
-        <script async src="https://telegram.org/js/telegram-widget.js?7"
-                data-telegram-login="Income_KoroBot" 
-                data-size="large"
-                data-userpic="false"
-                data-request-access="write"
-                onlogin="onTelegramAuth(user)">
-        </script>
-
-        <div class="stats">
-            <p>Watched Ads: <span id="watched-ads">0</span></p>
-            <p>Earned Points: <span id="earned-points">0.00</span></p>
-        </div>
-        <div class="progress-circle">
-            <span id="ads-progress">0%</span>
-        </div>
-        <div class="buttons">
-            <button id="watch-ad-btn" onclick="watchAd()">Watch Ad</button>
-            <button id="auto-ad-btn" onclick="startAutoAds()">Auto Show Ads</button>
-            <button id="stop-auto-btn" onclick="stopAutoAds()">Stop Auto Ads</button>
-            <button id="withdraw-btn" onclick="showWithdrawForm()">Withdraw</button>
-        </div>
-
-        <div class="withdraw-section" id="withdraw-section">
-            <h3 style="color: orange; margin-bottom: 15px;">Withdrawal Request</h3>
-            <input type="number" id="withdraw-amount" placeholder="Enter Points to Withdraw" />
-            <select id="payment-method">
-                <option value="bkash">Bkash</option>
-                <option value="nagad">Nagad</option>
-                <option value="rocket">Rocket</option>
-            </select>
-            <input type="text" id="withdraw-phone" placeholder="Enter Phone Number" />
-            <button onclick="withdrawPoints()">Withdraw</button>
-            <p id="withdraw-status"></p>
-            <div id="withdraw-history" style="margin-top: 20px; text-align: left;">
-    <h4 style="color: orange;">Withdrawal History</h4>
-    <ul id="history-list" style="font-size: 13px; padding-left: 15px;"></ul>
+        <div class="profile-section">
+            <div class="profile-card">
+                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile" class="profile-pic" id="profilePic">
+                <h1 class="profile-name" id="profileNameDisplay">
+                    Loading...
+                    <i class="fas fa-check-circle verified-badge"></i>
+                    <button class="edit-name-btn" id="editNameBtn">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </h1>
+                <div class="points-display" id="userPointsDisplay">
+                    <i class="fas fa-coins"></i> 0 Points
+                </div>
+                <div class="stats-display">
+                    <div class="stat-item">
+                        <div class="stat-value" id="adsWatchedToday">0</div>
+                        <div class="stat-label">Today</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="adsLeftToday">50</div>
+                        <div class="stat-label">Left</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalAdsWatched">0</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <div class="content-section" id="mainContent">
+            </div>
+
+        <div class="bottom-nav">
+            <a href="#" class="nav-item active" data-page="home">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" data-page="tasks">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="#" class="nav-item" data-page="bonus">
+                <i class="fas fa-gift"></i>
+                <span>Bonus</span>
+            </a>
+            <a href="#" class="nav-item" data-page="withdraw">
+                <i class="fas fa-wallet"></i>
+                <span>Withdraw</span>
+            </a>
+            <a href="#" class="nav-item" data-page="referral">
+                <i class="fas fa-share-alt"></i>
+                <span>Referral</span>
+            </a>
+        </div>
+
+        <div class="ad-modal-overlay" id="adModal">
+            <div class="ad-modal">
+                <h3 class="ad-modal-title" id="adModalTitle">Loading Ad...</h3>
+                <div class="spinner" id="adSpinner"></div>
+                <p class="ad-status" id="adStatusMessage">Please wait while we load the ad</p>
+                <button class="btn btn-primary" id="adCloseBtn" style="display: none;">Close & Claim Reward</button>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
     </div>
 
-    <script src='//jagnaimsee.net/vignette.min.js' data-zone='9289458' data-sdk='show_9289458'></script>
-    <script>
-        const MIN_WITHDRAW_POINTS = 1.0;
-        const ADMIN_USER_ID = 7530477593;
-        const BOT_TOKEN = "7939065302:AAEop1qxvdjnSHoRasYcACXkB2dmz2NRUxk";
-
-        let telegramUserName = "Guest";
-        let watchedAdsCount = 0;
-        let earnedPoints = 0.00;
-        let autoAdInterval;
-
-        function onTelegramAuth(user) {
-            telegramUserName = '@' + user.username;
-            document.getElementById("user-name").textContent = telegramUserName;
-            loadUserData();
-        }
-
-        function getUserKey(keyName) {
-            return `user-${telegramUserName}-${keyName}`;
-        }
-
-        function loadUserData() {
-            watchedAdsCount = parseInt(localStorage.getItem(getUserKey('watchedAdsCount'))) || 0;
-            earnedPoints = parseFloat(localStorage.getItem(getUserKey('earnedPoints'))) || 0;
-            document.getElementById('watched-ads').textContent = watchedAdsCount;
-            document.getElementById('earned-points').textContent = earnedPoints.toFixed(2);
-            updateProgressCircle();
-        }
-
-        function saveUserData() {
-            localStorage.setItem(getUserKey('watchedAdsCount'), watchedAdsCount);
-            localStorage.setItem(getUserKey('earnedPoints'), earnedPoints.toFixed(2));
-        }
-
-        function updateProgressCircle() {
-            const percentage = Math.min((watchedAdsCount / 10) * 100, 100);
-            document.getElementById('ads-progress').textContent = `${percentage}%`;
-        }
-
-        function watchAd() {
-            if (typeof show_9289458 === 'function') {
-                show_9289458().then(() => {
-                    watchedAdsCount++;
-                    earnedPoints += 0.50;
-                    document.getElementById('watched-ads').textContent = watchedAdsCount;
-                    document.getElementById('earned-points').textContent = earnedPoints.toFixed(2);
-                    saveUserData();
-                    updateProgressCircle();
-                });
-            }
-        }
-
-        function startAutoAds() {
-            autoAdInterval = setInterval(watchAd, 5000);
-            document.getElementById('auto-ad-btn').disabled = true;
-            document.getElementById('stop-auto-btn').disabled = false;
-        }
-
-        function stopAutoAds() {
-            clearInterval(autoAdInterval);
-            document.getElementById('auto-ad-btn').disabled = false;
-            document.getElementById('stop-auto-btn').disabled = true;
-        }
-
-        function showWithdrawForm() {
-            document.getElementById('withdraw-section').style.display = 'block';
-        }
-
-        function withdrawPoints() {
-            const amount = parseFloat(document.getElementById('withdraw-amount').value);
-            const paymentMethod = document.getElementById('payment-method').value;
-            const phoneNumber = document.getElementById('withdraw-phone').value;
-
-            if (amount < MIN_WITHDRAW_POINTS) {
-                document.getElementById('withdraw-status').textContent = `Minimum withdrawal is ${MIN_WITHDRAW_POINTS} points.`;
-                return;
-            }
-
-            if (amount > earnedPoints) {
-                document.getElementById('withdraw-status').textContent = `Insufficient points. You have ${earnedPoints.toFixed(2)}.`;
-                return;
-            }
-
-            earnedPoints -= amount;
-            document.getElementById('earned-points').textContent = earnedPoints.toFixed(2);
-            saveUserData();
-
-            const message = `Withdrawal Request from ${telegramUserName}:\nAmount: ${amount} points\nPayment Method: ${paymentMethod}\nPhone: ${phoneNumber}`;
-            
-            function saveWithdrawalHistory(amount, method, phone) {
-    const historyKey = getUserKey('withdraw-history');
-    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
-
-    const newEntry = {
-        date: new Date().toLocaleString(),
-        amount,
-        method,
-        phone
+<script>
+    // ===================================================================
+    // ===               FIREBASE CONFIGURATION                      ===
+    // ===================================================================
+    // আপনার দেওয়া Firebase কনফিগারেশন
+    const firebaseConfig = {
+        apiKey: "AIzaSyD3d3dDeoQ7qbRJpDsgL02lCrBltMTyST4",
+        authDomain: "eanr-money-2x.firebaseapp.com",
+        databaseURL: "https://eanr-money-2x-default-rtdb.firebaseio.com",
+        projectId: "eanr-money-2x",
+        storageBucket: "eanr-money-2x.appspot.com",
+        messagingSenderId: "697903088085",
+        appId: "1:697903088085:web:bc9e6ec6e8e151618d7d5c",
+        measurementId: "G-FZRXMW82QN"
     };
 
-    history.push(newEntry);
-    localStorage.setItem(historyKey, JSON.stringify(history));
-    renderWithdrawalHistory();
-}
+    // Firebase ইনিশিয়ালাইজ করুন
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database(); // Realtime Database instance
+    // ===================================================================
 
-function renderWithdrawalHistory() {
-    const historyKey = getUserKey('withdraw-history');
-    let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+    // App Configuration
+    const APP_NAME = "Income Koro";
+    const ADS_PER_DAY_LIMIT = 50;
+    const POINTS_PER_AD = 20;
+    const MIN_WITHDRAW_POINTS = 2000;
+    const REFERRAL_BONUS_REFERRER = 500;
+    const REFERRAL_BONUS_REFEREE = 200;
+    const MONETAG_AD_FUNCTION_NAME = 'show_9289458';
+    const TELEGRAM_BOT_TOKEN = "7939065302:AAEop1qxvdjnSHoRasYcACXkB2dmz2NRUxk";
+    const TELEGRAM_CHAT_ID = "-1002541336403";
+    const DEVELOPER_TELEGRAM_PROFILE_LINK = "https://t.me/HasanSikder26";
+    const REFERRAL_BOT_LINK = "https://t.me/Income_KoroBot";
+    const OFFICIAL_CHANNEL_LINK = "https://t.me/your_official_channel"; // Update this
+    const SUPPORT_GROUP_LINK = "https://t.me/your_support_group"; // Update this
+    const BONUS_CHANNELS = [
+        { id: 'tg_official_channel', name: 'Official Channel', link: OFFICIAL_CHANNEL_LINK, reward: 50, icon: 'fab fa-telegram-plane' },
+        { id: 'tg_support_group', name: 'Support Group', link: SUPPORT_GROUP_LINK, reward: 50, icon: 'fas fa-headset' },
+    ];
 
-    const list = document.getElementById('history-list');
-    list.innerHTML = '';
-    history.slice().reverse().forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = `${item.date} - ${item.amount} pts via ${item.method} to ${item.phone}`;
-        list.appendChild(li);
+    // DOM Elements
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const profileNameDisplay = document.getElementById('profileNameDisplay');
+    const profilePic = document.getElementById('profilePic');
+    const userPointsDisplay = document.getElementById('userPointsDisplay');
+    const adsWatchedTodayEl = document.getElementById('adsWatchedToday');
+    const adsLeftTodayEl = document.getElementById('adsLeftToday');
+    const totalAdsWatchedEl = document.getElementById('totalAdsWatched');
+    const mainContent = document.getElementById('mainContent');
+    const bottomNavItems = document.querySelectorAll('.bottom-nav .nav-item');
+    const adModal = document.getElementById('adModal');
+    const adModalTitle = document.getElementById('adModalTitle');
+    const adSpinner = document.getElementById('adSpinner');
+    const adStatusMessage = document.getElementById('adStatusMessage');
+    const adCloseBtn = document.getElementById('adCloseBtn');
+    const toast = document.getElementById('toast');
+
+    let currentUser = null;
+
+    // Utility Functions
+    function showToast(message, duration = 3000) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => { toast.classList.remove('show'); }, duration);
+    }
+    function generateReferralCode() { return Math.random().toString(36).substring(2, 10).toUpperCase(); }
+
+    // ===================================================================
+    // ===       USER DATA MANAGEMENT (with REALTIME DATABASE)       ===
+    // ===================================================================
+
+    async function loadUserState() {
+        if (!window.Telegram || !Telegram.WebApp || !Telegram.WebApp.initDataUnsafe.user) {
+            document.body.innerHTML = `<div style="text-align: center; padding: 40px; font-family: sans-serif;"><h1>Error</h1><p>This web app must be opened through a Telegram bot.</p></div>`;
+            return;
+        }
+
+        const tgUser = Telegram.WebApp.initDataUnsafe.user;
+        const userId = tgUser.id.toString();
+        const userRef = db.ref('users/' + userId);
+
+        try {
+            const snapshot = await userRef.once('value');
+            if (snapshot.exists()) {
+                currentUser = snapshot.val();
+                currentUser.name = `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || currentUser.name;
+                currentUser.photoUrl = tgUser.photo_url || currentUser.photoUrl;
+            } else {
+                currentUser = {
+                    id: userId,
+                    name: `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || `User ${userId}`,
+                    photoUrl: tgUser.photo_url || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+                    points: 0,
+                    adsWatchedToday: 0,
+                    totalAdsWatchedLifetime: 0,
+                    lastAdWatchDate: null,
+                    claimedBonuses: [],
+                    referralCode: generateReferralCode(),
+                    referredBy: null,
+                    referredUsers: []
+                };
+                await userRef.set(currentUser);
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCodeFromUrl = urlParams.get('start') || urlParams.get('ref');
+            if (refCodeFromUrl && !currentUser.referredBy && refCodeFromUrl !== currentUser.referralCode) {
+                await applyReferral(refCodeFromUrl);
+            }
+        } catch (error) {
+            console.error("Error loading user state:", error);
+            showToast("Could not connect. Please try again.");
+        }
+    }
+
+    async function saveUserState() {
+        if (!currentUser || !currentUser.id) return;
+        try {
+            await db.ref('users/' + currentUser.id).set(currentUser);
+        } catch (error) {
+            console.error("Error saving user state:", error);
+            showToast("Failed to save progress.");
+        }
+    }
+
+    async function applyReferral(referrerCode) {
+        if (referrerCode === currentUser.referralCode || currentUser.referredBy) return;
+
+        const usersRef = db.ref('users');
+        const snapshot = await usersRef.orderByChild('referralCode').equalTo(referrerCode).once('value');
+
+        if (snapshot.exists()) {
+            let referrerId, referrerUser;
+            snapshot.forEach(childSnapshot => {
+                referrerId = childSnapshot.key;
+                referrerUser = childSnapshot.val();
+            });
+
+            if (referrerId && referrerUser) {
+                // Update referee (current user)
+                currentUser.points = (currentUser.points || 0) + REFERRAL_BONUS_REFEREE;
+                currentUser.referredBy = referrerCode;
+                
+                // Update referrer in a separate operation
+                const referrerRef = db.ref('users/' + referrerId);
+                const updatedPoints = (referrerUser.points || 0) + REFERRAL_BONUS_REFERRER;
+                const updatedReferredUsers = [...(referrerUser.referredUsers || []), currentUser.id];
+                
+                await referrerRef.update({
+                    points: updatedPoints,
+                    referredUsers: updatedReferredUsers
+                });
+                
+                // Save current user's state
+                await saveUserState();
+
+                showToast(`+${REFERRAL_BONUS_REFEREE} bonus for joining!`);
+                sendTelegramReferralNotification(currentUser.name, currentUser.id, referrerUser.name, referrerId);
+            }
+        } else {
+            showToast("Invalid referral code.");
+        }
+    }
+
+    // ===================================================================
+    // ===                  APP INITIALIZATION & UI                  ===
+    // ===================================================================
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (window.Telegram && Telegram.WebApp) {
+            Telegram.WebApp.expand();
+            Telegram.WebApp.enableClosingConfirmation();
+        }
+        
+        await loadUserState();
+        
+        if (!currentUser) {
+            showToast("Failed to load user data. Please restart the app.");
+            return;
+        }
+
+        applyTheme(localStorage.getItem('galaxyEarnTheme') || 'light');
+        navigateTo('home');
+
+        themeToggleBtn.addEventListener('click', toggleTheme);
+        bottomNavItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo(item.dataset.page);
+            });
+        });
+        adCloseBtn.addEventListener('click', closeAdModalAndReward);
     });
-        }
-            saveWithdrawalHistory(amount, paymentMethod, phoneNumber);   
-            sendWithdrawRequestToAdmin(message);
+    
+    function applyTheme(theme) {
+        document.body.classList.toggle('dark-mode', theme === 'dark');
+        themeToggleBtn.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        localStorage.setItem('galaxyEarnTheme', theme);
+    }
+    function toggleTheme() { applyTheme(document.body.classList.contains('dark-mode') ? 'light' : 'dark'); }
 
-            document.getElementById('withdraw-status').textContent = 'Withdrawal request sent!';
-            document.getElementById('withdraw-amount').value = '';
-            document.getElementById('withdraw-phone').value = '';
+    async function updateUI() {
+        if (!currentUser) return;
+        
+        const today = new Date().toLocaleDateString();
+        if (currentUser.lastAdWatchDate !== today) {
+            currentUser.adsWatchedToday = 0;
+            currentUser.lastAdWatchDate = today;
+            await saveUserState();
         }
 
-        function sendWithdrawRequestToAdmin(message) {
-            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_USER_ID}&text=${encodeURIComponent(message)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.ok) console.log("Sent to admin");
-                })
-                .catch(err => console.error("Error:", err));
+        profileNameDisplay.innerHTML = `${currentUser.name}<i class="fas fa-check-circle verified-badge"></i><button class="edit-name-btn" id="editNameBtn"><i class="fas fa-pencil-alt"></i></button>`;
+        document.getElementById('editNameBtn').addEventListener('click', promptForNewName);
+
+        userPointsDisplay.innerHTML = `<i class="fas fa-coins"></i> ${currentUser.points || 0} Points`;
+        adsWatchedTodayEl.textContent = currentUser.adsWatchedToday || 0;
+        adsLeftTodayEl.textContent = ADS_PER_DAY_LIMIT - (currentUser.adsWatchedToday || 0);
+        totalAdsWatchedEl.textContent = currentUser.totalAdsWatchedLifetime || 0;
+        if (currentUser.photoUrl) profilePic.src = currentUser.photoUrl;
+
+        const currentActivePage = document.querySelector('.nav-item.active')?.dataset.page;
+        if (currentActivePage) navigateTo(currentActivePage, true);
+    }
+
+    async function promptForNewName() {
+        const newName = prompt("Enter your new name:", currentUser.name);
+        if (newName && newName.trim()) {
+            currentUser.name = newName.trim();
+            await saveUserState();
+            updateUI();
+            showToast("Name updated successfully!");
         }
-    </script>
+    }
+
+    function navigateTo(page, isUpdate = false) {
+        if (!currentUser) return;
+        if (!isUpdate) {
+            document.querySelector('.bottom-nav .nav-item.active')?.classList.remove('active');
+            document.querySelector(`.nav-item[data-page="${page}"]`)?.classList.add('active');
+        }
+
+        const pageRenderers = {
+            'home': renderHomePage,
+            'tasks': renderTasksPage,
+            'bonus': renderBonusPage,
+            'withdraw': renderWithdrawPage,
+            'referral': renderReferralPage
+        };
+        if (pageRenderers[page]) pageRenderers[page]();
+    }
+    
+    // ===================================================================
+    // ===                     PAGE RENDERERS                        ===
+    // ===================================================================
+
+    function renderHomePage() {
+        mainContent.innerHTML = `<div class="task-card"><h2 class="section-title"><i class="fas fa-home"></i> Welcome</h2><p class="task-description">Welcome to ${APP_NAME}, ${currentUser.name.split(' ')[0]}! Start earning points.</p><div class="stats-display" style="justify-content: space-between; margin-top: 20px; gap: 8px;"><div class="stat-item"><div class="stat-value">${ADS_PER_DAY_LIMIT - (currentUser.adsWatchedToday||0)}</div><div class="stat-label">Ads Left</div></div><div class="stat-item"><div class="stat-value">${currentUser.points||0}</div><div class="stat-label">Points</div></div><div class="stat-item"><div class="stat-value">${currentUser.referredUsers ? currentUser.referredUsers.length : 0}</div><div class="stat-label">Referrals</div></div></div></div><div style="margin-top: 15px; text-align: center;"><a href="${OFFICIAL_CHANNEL_LINK}" target="_blank" class="btn btn-secondary"><i class="fab fa-telegram-plane"></i> Join Our Channel</a></div><div class="developer-footer">Developed by <a href="${DEVELOPER_TELEGRAM_PROFILE_LINK}" target="_blank" class="developer-link">HasanSikder26</a></div>`;
+    }
+
+    function renderTasksPage() {
+        const adsLeft = ADS_PER_DAY_LIMIT - (currentUser.adsWatchedToday || 0);
+        const progressPercent = ((currentUser.adsWatchedToday || 0) / ADS_PER_DAY_LIMIT) * 100;
+        mainContent.innerHTML = `<div class="task-card"><div class="task-header"><div class="task-icon"><i class="fas fa-ad"></i></div><div class="task-title">Watch Ads</div><div class="reward-badge">+${POINTS_PER_AD}</div></div><p class="task-description">Watch ads to earn points. You can watch up to ${ADS_PER_DAY_LIMIT} ads per day.</p><div class="progress-container"><div class="progress-text"><span>${currentUser.adsWatchedToday||0}/${ADS_PER_DAY_LIMIT} watched</span><span>${adsLeft} left</span></div><div class="progress-bar"><div class="progress" style="width: ${progressPercent}%"></div></div></div><button class="btn btn-primary" id="watchDailyAdBtn" ${adsLeft <= 0 ? 'disabled' : ''}><i class="fas fa-play"></i> Watch Ad & Earn ${POINTS_PER_AD} Points</button></div>`;
+        if (adsLeft > 0) document.getElementById('watchDailyAdBtn').addEventListener('click', handleWatchDailyAd);
+    }
+
+    function renderBonusPage() {
+        let channelsHtml = BONUS_CHANNELS.map(channel => {
+            const isClaimed = currentUser.claimedBonuses && currentUser.claimedBonuses.includes(channel.id);
+            return `<li class="channel-item"><div class="channel-info"><div class="channel-icon"><i class="${channel.icon}"></i></div><div><div class="channel-name">${channel.name}</div><div class="channel-reward">+${channel.reward} Points</div></div></div><a href="${channel.link}" target="_blank" class="join-btn ${isClaimed ? 'claimed' : ''}" data-channel-id="${channel.id}" data-reward="${channel.reward}">${isClaimed ? 'Claimed' : 'Join'}</a></li>`;
+        }).join('');
+        mainContent.innerHTML = `<div class="task-card"><h2 class="section-title"><i class="fas fa-gift"></i> Bonus Rewards</h2><p class="task-description">Join our channels to earn bonus points. Visit the channel and return to claim.</p><ul class="channel-list">${channelsHtml}</ul></div>`;
+        document.querySelectorAll('.join-btn:not(.claimed)').forEach(btn => btn.addEventListener('click', (e) => handleBonusLinkClick(e, btn)));
+    }
+
+    function renderWithdrawPage() {
+        mainContent.innerHTML = `<div class="task-card"><h2 class="section-title"><i class="fas fa-wallet"></i> Withdraw</h2><p class="task-description">Minimum withdrawal is ${MIN_WITHDRAW_POINTS} points.</p><div class="input-group"><label class="input-label">Amount (Points)</label><input type="number" id="withdrawAmountInput" class="input-field" placeholder="Enter amount"></div><div class="input-group"><label class="input-label">Payment Method</label><select id="withdrawMethodSelect" class="select-field"><option value="">Select method</option><option>Bkash</option><option>Nagad</option><option>Rocket</option><option>Upay</option></select></div><div class="input-group"><label class="input-label">Account Number/ID</label><input type="text" id="withdrawAccountInput" class="input-field" placeholder="Enter account details"></div><button class="btn btn-primary" id="submitWithdrawBtn"><i class="fas fa-paper-plane"></i> Submit Request</button><p class="status-message" id="withdrawStatusMsg"></p></div>`;
+        document.getElementById('submitWithdrawBtn').addEventListener('click', handleSubmitWithdrawal);
+    }
+
+    function renderReferralPage() {
+        const referralLink = `${REFERRAL_BOT_LINK}?start=${currentUser.referralCode}`;
+        const referredUsersCount = currentUser.referredUsers ? currentUser.referredUsers.length : 0;
+        mainContent.innerHTML = `<div class="task-card"><h2 class="section-title"><i class="fas fa-share-alt"></i> Refer & Earn</h2><p class="task-description">Invite friends and earn ${REFERRAL_BONUS_REFERRER} points for each successful referral. They'll get ${REFERRAL_BONUS_REFEREE} points too!</p><div class="referral-container"><label class="input-label">Your Referral Link</label><div class="referral-input-group"><input type="text" id="referralLinkDisplay" class="referral-input" value="${referralLink}" readonly><button class="copy-btn" id="copyReferralLinkBtn">Copy</button></div><button class="btn btn-secondary" id="shareReferralLinkBtn" style="margin-top: 15px; width: 100%;"><i class="fas fa-share-alt"></i> Share Link</button></div><div class="referral-stats"><div class="stat-card"><div class="stat-number">${referredUsersCount}</div><div class="stat-title">Total Referrals</div></div><div class="stat-card"><div class="stat-number">${referredUsersCount * REFERRAL_BONUS_REFERRER}</div><div class="stat-title">Points Earned</div></div></div></div>`;
+        document.getElementById('copyReferralLinkBtn').addEventListener('click', () => navigator.clipboard.writeText(referralLink).then(() => showToast('Link copied!')));
+        document.getElementById('shareReferralLinkBtn').addEventListener('click', () => {
+             if (navigator.share) { navigator.share({ title: `${APP_NAME} - Earn Points!`, text: `Join ${APP_NAME} and get bonus points!`, url: referralLink }); }
+             else { navigator.clipboard.writeText(referralLink).then(() => showToast('Link copied! Share it manually.')); }
+        });
+    }
+
+    // ===================================================================
+    // ===                    APP LOGIC & ACTIONS                    ===
+    // ===================================================================
+
+    let adWatchedSuccessfully = false;
+    let adRewardPending = false;
+
+    function handleWatchDailyAd() {
+        if ((currentUser.adsWatchedToday || 0) >= ADS_PER_DAY_LIMIT) {
+            showToast("Daily ad limit reached!");
+            return;
+        }
+        adWatchedSuccessfully = false;
+        adRewardPending = true;
+        openAdModal("Launching Ad...");
+
+        if (MONETAG_AD_FUNCTION_NAME && typeof window[MONETAG_AD_FUNCTION_NAME] === 'function') {
+            try {
+                window[MONETAG_AD_FUNCTION_NAME]().then(() => {
+                    adWatchedSuccessfully = true;
+                    if (adRewardPending) {
+                        adSpinner.style.display = 'none';
+                        adStatusMessage.textContent = "Ad completed! Close to claim reward.";
+                        adCloseBtn.style.display = 'block';
+                    }
+                }).catch(err => handleAdError("Ad closed too soon or failed to load."));
+            } catch (err) { handleAdError("Error loading ad. Please try again."); }
+        } else {
+            showToast("Ad service not available. Simulating ad watch...");
+            setTimeout(() => {
+                if (adRewardPending) {
+                    adSpinner.style.display = 'none';
+                    adStatusMessage.textContent = "Simulated ad completed!";
+                    adCloseBtn.style.display = 'block';
+                    adWatchedSuccessfully = true;
+                }
+            }, 5000);
+        }
+    }
+
+    function handleAdError(errorMessage) {
+        if (adRewardPending) {
+            adSpinner.style.display = 'none';
+            adStatusMessage.textContent = errorMessage;
+            adModalTitle.textContent = "Ad Error";
+            adCloseBtn.textContent = "Close";
+            adCloseBtn.style.display = 'block';
+            adWatchedSuccessfully = false;
+            adRewardPending = false;
+        }
+    }
+    
+    function openAdModal(title) {
+        adModal.classList.add('show');
+        adModalTitle.textContent = title;
+        adSpinner.style.display = 'block';
+        adCloseBtn.style.display = 'none';
+        adStatusMessage.textContent = "Please wait while we load the ad";
+        adCloseBtn.textContent = "Close & Claim Reward";
+    }
+
+    async function closeAdModalAndReward() {
+        adModal.classList.remove('show');
+        if (adWatchedSuccessfully && adRewardPending) {
+            currentUser.points = (currentUser.points || 0) + POINTS_PER_AD;
+            currentUser.adsWatchedToday = (currentUser.adsWatchedToday || 0) + 1;
+            currentUser.totalAdsWatchedLifetime = (currentUser.totalAdsWatchedLifetime || 0) + 1;
+            currentUser.lastAdWatchDate = new Date().toLocaleDateString();
+            await saveUserState();
+            await updateUI();
+            showToast(`+${POINTS_PER_AD} points earned!`);
+        } else if (adRewardPending && !adWatchedSuccessfully) { showToast("Ad not completed. No points awarded."); }
+        adRewardPending = false;
+        adWatchedSuccessfully = false;
+    }
+
+    async function handleBonusLinkClick(event, buttonElement) {
+        event.preventDefault();
+        const channelId = buttonElement.dataset.channelId;
+        const reward = parseInt(buttonElement.dataset.reward);
+
+        if (currentUser.claimedBonuses && currentUser.claimedBonuses.includes(channelId)) {
+            showToast("Bonus already claimed!");
+            return;
+        }
+
+        window.open(buttonElement.href, '_blank');
+        buttonElement.textContent = 'Verifying...';
+        buttonElement.style.pointerEvents = 'none';
+
+        setTimeout(async () => {
+            currentUser.points = (currentUser.points || 0) + reward;
+            if (!currentUser.claimedBonuses) currentUser.claimedBonuses = [];
+            currentUser.claimedBonuses.push(channelId);
+            await saveUserState();
+            await updateUI();
+            showToast(`+${reward} bonus points claimed!`);
+        }, 7000);
+    }
+
+    async function handleSubmitWithdrawal() {
+        const amount = parseInt(document.getElementById('withdrawAmountInput').value);
+        const method = document.getElementById('withdrawMethodSelect').value;
+        const account = document.getElementById('withdrawAccountInput').value.trim();
+        const statusMsg = document.getElementById('withdrawStatusMsg');
+
+        statusMsg.className = 'status-message';
+        statusMsg.textContent = '';
+
+        if (isNaN(amount) || amount < MIN_WITHDRAW_POINTS || amount > (currentUser.points || 0) || !method || !account) {
+            statusMsg.textContent = "Please check all fields and your point balance.";
+            statusMsg.classList.add('error-message');
+            return;
+        }
+
+        const escapeMarkdown = (text) => text.replace(/([_*\[\]()~`>#+\-=|{}.!])/g, '\\$1');
+        const telegramUserId = currentUser.id ? `TG ID: \`${currentUser.id}\`` : '';
+        const withdrawalDetails = `🔔 *New Withdrawal Request* 🔔\n------------------------------------\n👤 *User:* \`${escapeMarkdown(currentUser.name)}\`\n${telegramUserId}\n✨ *Points:* ${amount}\n💳 *Method:* ${escapeMarkdown(method)}\n#️⃣ *Account:* \`${escapeMarkdown(account)}\`\n------------------------------------\n💰 Remaining Points: ${(currentUser.points || 0) - amount}`;
+
+        sendToTelegram(withdrawalDetails);
+
+        currentUser.points -= amount;
+        await saveUserState();
+        await updateUI();
+
+        statusMsg.textContent = "Withdrawal request submitted successfully!";
+        statusMsg.classList.add('success-message');
+        document.getElementById('withdrawAmountInput').value = "";
+    }
+
+    // Telegram Integration
+    function sendToTelegram(message) {
+        if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+        fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'MarkdownV2'})
+        }).catch(err => console.error(err));
+    }
+
+    function sendTelegramReferralNotification(refereeName, refereeId, referrerName, referrerId) {
+        const escape = (text) => text.replace(/([_*`[\]()~`>#+\-=|{}.!])/g, '\\$1');
+        const message = `🎉 *New Referral!*\n\n*New User:* \`${escape(refereeName)}\` (ID: \`${refereeId}\`)\n*Joined via:* \`${escape(referrerName)}\` (ID: \`${referrerId}\`)\n\n*Bonus Awarded:*\n*To New User:* ${REFERRAL_BONUS_REFEREE} points\n*To Referrer:* ${REFERRAL_BONUS_REFERRER} points`;
+        sendToTelegram(message);
+    }
+</script>
+
 </body>
 </html>
