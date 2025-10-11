@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Admin Panel - Earn & Reward App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <style>
+    /* === ইউজার প্যানেলের একই থিম ব্যবহার করা হয়েছে === */
+    :root{
+      --font-family:'Nunito',sans-serif;
+      --bg-color-light:#f4f4f9; --secondary-bg-light:#fff; --text-color-light:#1c1c1e; --subtle-text-light:#6d6d72; --primary-color-light:#007aff; --border-color-light:#e0e0e0;
+      --bg-color-dark:#121212;  --secondary-bg-dark:#1c1c1e;  --text-color-dark:#fff;   --subtle-text-dark:#8e8e93;  --primary-color-dark:#0a84ff;  --border-color-dark:#38383a;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:var(--font-family);transition:background-color .3s,color .3s;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;line-height:1.6}
+    body.light-theme{background-color:var(--bg-color-light);color:var(--text-color-light)}
+    body.dark-theme{background-color:var(--bg-color-dark);color:var(--text-color-dark)}
+
+    /* Login View */
+    #login-view{display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
+    .login-card{width:100%;max-width:400px;padding:30px;border-radius:15px}
+    .dark-theme .login-card{background-color:var(--secondary-bg-dark);border:1px solid var(--border-color-dark)}
+    .light-theme .login-card{background-color:var(--secondary-bg-light);border:1px solid var(--border-color-light)}
+    .login-card h1{text-align:center;margin-bottom:20px;font-size:1.8rem}
+    .form-group{margin-bottom:15px}
+    .form-group label{display:block;margin-bottom:5px;font-weight:600}
+    .form-group input{width:100%;padding:12px;border-radius:8px;border:1px solid;outline:none;font-size:1rem}
+    .dark-theme .form-group input{background-color:var(--bg-color-dark);border-color:var(--border-color-dark);color:var(--text-color-dark)}
+    .light-theme .form-group input{background-color:var(--bg-color-light);border-color:var(--border-color-light);color:var(--text-color-light)}
+    
+    /* Admin View */
+    #admin-view{display:none;max-width:800px;margin:0 auto;padding:20px}
+    .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid}
+    .dark-theme .admin-header{border-color: var(--border-color-dark)}
+    .light-theme .admin-header{border-color: var(--border-color-light)}
+    .admin-header h1{font-size:1.5rem}
+    
+    /* Buttons */
+    .btn{padding:10px 18px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:1rem;transition:opacity .2s}
+    .btn:hover{opacity:.9}
+    .btn-primary{color:#fff;}
+    .dark-theme .btn-primary{background-color:var(--primary-color-dark)}
+    .light-theme .btn-primary{background-color:var(--primary-color-light)}
+    .btn-danger{background-color:#ff3b30;color:#fff}
+    .btn-success{background-color:#34c759;color:#fff}
+    .btn-warning{background-color:#ff9500;color:#fff}
+
+    /* Navigation */
+    .admin-nav{display:flex;gap:10px;margin-bottom:25px;flex-wrap:wrap;}
+    .nav-btn{flex-grow:1;background-color:transparent;padding:10px;border:1px solid;font-weight:700;}
+    .dark-theme .nav-btn{color:var(--subtle-text-dark); border-color:var(--border-color-dark);}
+    .light-theme .nav-btn{color:var(--subtle-text-light);border-color:var(--border-color-light);}
+    .nav-btn.active{border-width:2px}
+    .dark-theme .nav-btn.active{color:var(--primary-color-dark);border-color:var(--primary-color-dark)}
+    .light-theme .nav-btn.active{color:var(--primary-color-light);border-color:var(--primary-color-light)}
+
+    /* Pages */
+    .admin-page{display:none}
+    .admin-page.active{display:block;animation:fadeIn .4s}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    
+    /* Enhanced stat card design with icons and better layout */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:15px;margin-bottom:20px}
+    .stat-card{padding:20px;border-radius:12px;text-align:center;position:relative;overflow:hidden}
+    .dark-theme .stat-card{background:#1c1c1e;border:1px solid #38383a}
+    .light-theme .stat-card{background:#fff;border:1px solid #e0e0e0}
+    .stat-card .stat-icon{font-size:2rem;margin-bottom:8px;opacity:0.3;position:absolute;top:10px;right:10px}
+    .stat-card h3{font-size:.85rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px}
+    .dark-theme .stat-card h3{color:#8e8e93}
+    .light-theme .stat-card h3{color:#6d6d72}
+    .stat-card p{font-size:1.8rem;font-weight:700;position:relative;z-index:1}
+    .dark-theme .stat-card p{color:#0a84ff}
+    .light-theme .stat-card p{color:#007aff}
+    .stat-card small{display:block;margin-top:5px;font-size:0.75rem;opacity:0.7}
+
+    /* Added summary section for 24-hour stats */
+    .summary-section{margin-bottom:25px;padding:20px;border-radius:12px}
+    .dark-theme .summary-section{background:#1c1c1e;border:1px solid #38383a}
+    .light-theme .summary-section{background:#fff;border:1px solid #e0e0e0}
+    .summary-section h3{margin-bottom:15px;font-size:1.1rem}
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:15px}
+    .summary-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px}
+    .dark-theme .summary-item{background:rgba(255,255,255,0.03)}
+    .light-theme .summary-item{background:rgba(0,0,0,0.02)}
+    .summary-item i{font-size:1.5rem}
+    .dark-theme .summary-item i{color:#0a84ff}
+    .light-theme .summary-item i{color:#007aff}
+    .summary-item-content{flex:1}
+    .summary-item-label{font-size:0.8rem;opacity:0.7;display:block}
+    .summary-item-value{font-size:1.2rem;font-weight:700}
+
+    /* List & Table Styles (Responsive) */
+    .list-container{max-height: 50vh; overflow-y:auto; padding-right:10px;}
+    .list-item, .table-container {border-radius:12px;margin-bottom:15px;padding:15px;overflow:hidden;}
+    .dark-theme .list-item, .dark-theme .table-container {background-color:var(--secondary-bg-dark); border:1px solid var(--border-color-dark)}
+    .light-theme .list-item, .light-theme .table-container {background-color:var(--secondary-bg-light); border:1px solid var(--border-color-light)}
+
+    table{width:100%;border-collapse:collapse;}
+    th, td{padding:12px 8px;text-align:left;border-bottom:1px solid;}
+    .dark-theme th, .dark-theme td{border-color: var(--border-color-dark)}
+    .light-theme th, .light-theme td{border-color: var(--border-color-light)}
+    th{font-size: 0.9rem; text-transform:uppercase; opacity:0.7;}
+    
+    /* Responsive Table */
+    @media screen and (max-width: 600px) {
+        table, thead, tbody, th, td, tr { display: block; }
+        thead tr { position: absolute; top: -9999px; left: -9999px; }
+        tr { border: 1px solid; border-radius:10px; margin-bottom: 1rem; }
+        .dark-theme tr {border-color: var(--border-color-dark)}
+        .light-theme tr {border-color: var(--border-color-light)}
+        td { border: none; border-bottom: 1px solid; position: relative; padding-left: 50%; }
+        .dark-theme td{border-color: #444} .light-theme td{border-color: #eee}
+        td:before { position: absolute; top: 12px; left: 10px; width: 45%; padding-right: 10px; white-space: nowrap; font-weight:bold; }
+        td:nth-of-type(1):before { content: "Name"; }
+        td:nth-of-type(2):before { content: "Balance"; }
+        td:nth-of-type(3):before { content: "Refs"; }
+        td:nth-of-type(4):before { content: "Action"; }
+    }
+    .item-header{display:flex;justify-content:space-between;align-items:center;font-weight:bold;margin-bottom:10px;}
+    .item-body {font-size: 0.95rem; opacity:0.9;}
+    .item-actions{display:flex;gap:10px;margin-top:15px;}
+    .status-badge{padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; font-weight: 700;}
+    .status-pending {background-color:#ff9500; color:white;}
+    .status-approved {background-color:#34c759; color:white;}
+    .status-rejected {background-color:#ff3b30; color:white;}
+
+    /* Modal for User Edit */
+    .modal {position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:1000;overflow-y:auto;padding:20px}
+    .modal.show{display:flex}
+    .modal-content{padding:25px;border-radius:12px;width:90%;max-width:600px;max-height:90vh;overflow-y:auto}
+    .dark-theme .modal-content{background-color:var(--secondary-bg-dark); border:1px solid var(--border-color-dark)}
+    .light-theme .modal-content{background-color:var(--secondary-bg-light); border:1px solid var(--border-color-light)}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;padding-bottom:10px;border-bottom:1px solid}
+    .dark-theme .modal-header{border-color:var(--border-color-dark)}
+    .light-theme .modal-header{border-color:var(--border-color-light)}
+    .modal-header h2 {font-size:1.3rem;}
+    
+    /* Added styles for detailed user profile modal */
+    .user-profile-section{margin-bottom:20px;padding:15px;border-radius:8px}
+    .dark-theme .user-profile-section{background:rgba(255,255,255,0.03)}
+    .light-theme .user-profile-section{background:rgba(0,0,0,0.02)}
+    .user-profile-section h3{font-size:1rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .user-profile-section h3 i{font-size:0.9rem}
+    .dark-theme .user-profile-section h3 i{color:#0a84ff}
+    .light-theme .user-profile-section h3 i{color:#007aff}
+    .profile-info-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:10px;font-size:0.9rem}
+    .profile-info-item{display:flex;flex-direction:column;gap:3px}
+    .profile-info-label{opacity:0.7;font-size:0.8rem}
+    .profile-info-value{font-weight:600}
+    
+    .transaction-list{max-height:200px;overflow-y:auto;margin-top:10px}
+    .transaction-item{padding:10px;margin-bottom:8px;border-radius:6px;font-size:0.85rem;display:flex;justify-content:space-between;align-items:center}
+    .dark-theme .transaction-item{background:rgba(255,255,255,0.05)}
+    .light-theme .transaction-item{background:rgba(0,0,0,0.03)}
+    .transaction-amount{font-weight:700}
+    .transaction-amount.positive{color:#34c759}
+    .transaction-amount.negative{color:#ff3b30}
+    .transaction-reason{opacity:0.8;font-size:0.8rem}
+    
+    .admin-actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .action-group{display:flex;flex-direction:column;gap:8px}
+    .action-group label{font-size:0.85rem;font-weight:600}
+    .action-group input, .action-group textarea{width:100%;padding:8px;border-radius:6px;border:1px solid;font-size:0.9rem}
+    .dark-theme .action-group input, .dark-theme .action-group textarea{background:var(--bg-color-dark);border-color:var(--border-color-dark);color:var(--text-color-dark)}
+    .light-theme .action-group input, .light-theme .action-group textarea{background:var(--bg-color-light);border-color:var(--border-color-light);color:var(--text-color-light)}
+    .action-group textarea{resize:vertical;min-height:60px}
+    
+    .user-status-badge{display:inline-block;padding:4px 10px;border-radius:5px;font-size:0.75rem;font-weight:700;margin-left:8px}
+    .user-status-active{background:#34c759;color:white}
+    .user-status-banned{background:#ff3b30;color:white}
+
+    /* Added tab navigation styles for withdrawal sections */
+    .tab-nav{display:flex;gap:10px;margin-bottom:20px;border-bottom:2px solid}
+    .dark-theme .tab-nav{border-color:var(--border-color-dark)}
+    .light-theme .tab-nav{border-color:var(--border-color-light)}
+    .tab-btn{flex:1;padding:12px;background:transparent;border:none;font-weight:600;cursor:pointer;position:relative;transition:all 0.2s}
+    .dark-theme .tab-btn{color:var(--subtle-text-dark)}
+    .light-theme .tab-btn{color:var(--subtle-text-light)}
+    .tab-btn.active{font-weight:700}
+    .dark-theme .tab-btn.active{color:var(--primary-color-dark)}
+    .light-theme .tab-btn.active{color:var(--primary-color-light)}
+    .tab-btn.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px}
+    .dark-theme .tab-btn.active::after{background:var(--primary-color-dark)}
+    .light-theme .tab-btn.active::after{background:var(--primary-color-light)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    .tab-summary{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:8px;margin-bottom:15px;font-size:0.9rem}
+    .dark-theme .tab-summary{background:rgba(255,255,255,0.03)}
+    .light-theme .tab-summary{background:rgba(0,0,0,0.02)}
+    .tab-summary-label{opacity:0.8}
+    .tab-summary-value{font-weight:700;font-size:1.1rem}
+    .dark-theme .tab-summary-value{color:var(--primary-color-dark)}
+    .light-theme .tab-summary-value{color:var(--primary-color-light)}
+    
+    /* Added global notification section styles */
+    .notification-section{margin-bottom:25px;padding:20px;border-radius:12px}
+    .dark-theme .notification-section{background:#1c1c1e;border:1px solid #38383a}
+    .light-theme .notification-section{background:#fff;border:1px solid #e0e0e0}
+    .notification-section h3{margin-bottom:15px;font-size:1.1rem;display:flex;align-items:center;gap:8px}
+    .notification-section h3 i{font-size:1rem}
+    .dark-theme .notification-section h3 i{color:#0a84ff}
+    .light-theme .notification-section h3 i{color:#007aff}
+    .notification-form textarea{width:100%;padding:12px;border-radius:8px;border:1px solid;font-size:0.95rem;font-family:var(--font-family);resize:vertical;min-height:100px}
+    .dark-theme .notification-form textarea{background:var(--bg-color-dark);border-color:var(--border-color-dark);color:var(--text-color-dark)}
+    .light-theme .notification-form textarea{background:var(--bg-color-light);border-color:var(--border-color-light);color:var(--text-color-light)}
+    .notification-preview{margin-top:10px;padding:12px;border-radius:8px;font-size:0.85rem;opacity:0.8}
+    .dark-theme .notification-preview{background:rgba(255,255,255,0.05)}
+    .light-theme .notification-preview{background:rgba(0,0,0,0.03)}
+  </style>
+</head>
+
+<body class="dark-theme"> <!-- Default dark, can be changed -->
+
+  <!-- LOGIN VIEW -->
+  <div id="login-view">
+    <div class="login-card">
+      <h1><i class="fas fa-user-shield"></i> Admin Login</h1>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Login</button>
+        <p id="login-error" style="color:red; text-align:center; margin-top:10px;"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN VIEW -->
+  <div id="admin-view">
+    <header class="admin-header">
+      <h1>Admin Panel</h1>
+      <button id="logout-btn" class="btn btn-danger">Logout</button>
+    </header>
+
+    <nav class="admin-nav">
+      <button class="nav-btn btn active" data-page="dashboard">Dashboard</button>
+      <button class="nav-btn btn" data-page="withdrawals">Withdrawals</button>
+      <button class="nav-btn btn" data-page="users">Users</button>
+      <button class="nav-btn btn" data-page="settings">Settings</button>
+    </nav>
+
+    <main>
+      <!-- Dashboard Page -->
+      <div id="dashboard-page" class="admin-page active">
+        <!-- Enhanced stats grid with new cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <i class="fas fa-users stat-icon"></i>
+            <h3>Total Users</h3>
+            <p id="total-users">0</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-file-invoice stat-icon"></i>
+            <h3>Total Requests</h3>
+            <p id="total-requests">0</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-clock stat-icon"></i>
+            <h3>Pending</h3>
+            <p id="pending-requests">0</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-check-circle stat-icon"></i>
+            <h3>Total Paid</h3>
+            <p id="total-paid">0</p>
+            <small>Tk</small>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-hourglass-half stat-icon"></i>
+            <h3>Pending Amount</h3>
+            <p id="pending-amount">0</p>
+            <small>Tk</small>
+          </div>
+        </div>
+
+        <!-- Added 24-hour summary section -->
+        <div class="summary-section">
+          <h3><i class="fas fa-chart-line"></i> Last 24 Hours Summary</h3>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <i class="fas fa-user-plus"></i>
+              <div class="summary-item-content">
+                <span class="summary-item-label">New Users</span>
+                <span class="summary-item-value" id="new-users-24h">0</span>
+              </div>
+            </div>
+            <div class="summary-item">
+              <i class="fas fa-exchange-alt"></i>
+              <div class="summary-item-content">
+                <span class="summary-item-label">Total Transactions</span>
+                <span class="summary-item-value" id="transactions-24h">0</span>
+              </div>
+            </div>
+            <div class="summary-item">
+              <i class="fas fa-money-bill-wave"></i>
+              <div class="summary-item-content">
+                <span class="summary-item-label">Amount Processed</span>
+                <span class="summary-item-value" id="amount-24h">0 Tk</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Withdrawals Page -->
+      <div id="withdrawals-page" class="admin-page">
+        <h2>Withdrawal Requests</h2>
+        
+         <!-- Added tab navigation for withdrawal status filtering -->
+        <div class="tab-nav">
+          <button class="tab-btn active" data-tab="pending-tab">
+            <i class="fas fa-clock"></i> Pending
+          </button>
+          <button class="tab-btn" data-tab="approved-tab">
+            <i class="fas fa-check-circle"></i> Approved
+          </button>
+          <button class="tab-btn" data-tab="rejected-tab">
+            <i class="fas fa-times-circle"></i> Rejected
+          </button>
+        </div>
+        
+         <!-- Pending withdrawals tab -->
+        <div id="pending-tab" class="tab-content active">
+          <div class="tab-summary">
+            <span class="tab-summary-label">Total Pending Requests:</span>
+            <span class="tab-summary-value"><span id="pending-count">0</span> requests (<span id="pending-total">0</span> Tk)</span>
+          </div>
+          <div id="pending-list" class="list-container">
+            <p>Loading requests...</p>
+          </div>
+        </div>
+        
+         <!-- Approved withdrawals tab -->
+        <div id="approved-tab" class="tab-content">
+          <div class="tab-summary">
+            <span class="tab-summary-label">Total Approved Requests:</span>
+            <span class="tab-summary-value"><span id="approved-count">0</span> requests (<span id="approved-total">0</span> Tk)</span>
+          </div>
+          <div id="approved-list" class="list-container">
+            <p>Loading requests...</p>
+          </div>
+        </div>
+        
+         <!-- Rejected withdrawals tab -->
+        <div id="rejected-tab" class="tab-content">
+          <div class="tab-summary">
+            <span class="tab-summary-label">Total Rejected Requests:</span>
+            <span class="tab-summary-value"><span id="rejected-count">0</span> requests (<span id="rejected-total">0</span> Tk)</span>
+          </div>
+          <div id="rejected-list" class="list-container">
+            <p>Loading requests...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Page -->
+      <div id="users-page" class="admin-page">
+        <h2>All Users</h2>
+        <div class="table-container">
+            <input type="text" id="user-search" placeholder="Search by User ID..." class="form-group" style="width:100%; padding:10px; margin-bottom:15px;">
+            <table>
+              <thead>
+                <tr><th>Name/Username</th><th>Balance (Tk)</th><th>Referrals</th><th>Action</th></tr>
+              </thead>
+              <tbody id="users-table-body">
+                <tr><td colspan="4">Loading users...</td></tr>
+              </tbody>
+            </table>
+        </div>
+      </div>
+
+      <!-- Settings Page -->
+      <div id="settings-page" class="admin-page">
+        <h2>App Settings</h2>
+        
+         <!-- Added global notification system -->
+        <div class="notification-section">
+          <h3><i class="fas fa-bullhorn"></i> Global Announcement</h3>
+          <p style="font-size:0.9rem;opacity:0.8;margin-bottom:15px">
+            Send a notification to all users. This will appear in their app as a notice.
+          </p>
+          <div class="notification-form">
+            <textarea id="global-notification-text" placeholder="Enter your announcement message here..."></textarea>
+            <div class="notification-preview" id="notification-preview" style="display:none">
+              <strong>Preview:</strong><br>
+              <span id="preview-text"></span>
+            </div>
+            <button id="send-notification-btn" class="btn btn-primary" style="width:100%;margin-top:10px">
+              <i class="fas fa-paper-plane"></i> Send Notification to All Users
+            </button>
+          </div>
+        </div>
+        
+        <h3 style="margin-top:30px;margin-bottom:15px">Configuration Settings</h3>
+        <form id="settings-form">
+            <!-- Dynamically generated fields will be inserted here -->
+        </form>
+        <button id="save-settings-btn" class="btn btn-primary" style="margin-top:15px">Save Settings</button>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="edit-modal-title">Edit User</h2>
+                <button class="btn" onclick="document.getElementById('edit-user-modal').classList.remove('show')">&times;</button>
+            </div>
+            <p><strong>User ID:</strong> <code id="edit-user-id"></code></p>
+            <div class="form-group">
+                <label for="edit-balance">New Balance (Tk)</label>
+                <input type="number" id="edit-balance" step="any" required>
+            </div>
+            <button id="save-user-btn" class="btn btn-primary">Save Changes</button>
+        </div>
+    </div>
+
+  <!-- Enhanced User Details Modal with transaction history and admin actions -->
+  <div id="user-details-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="user-details-title">User Details</h2>
+        <button class="btn" onclick="document.getElementById('user-details-modal').classList.remove('show')">&times;</button>
+      </div>
+      
+      <!-- Profile Info Section -->
+      <div class="user-profile-section">
+        <h3><i class="fas fa-user"></i> Profile Information</h3>
+        <div class="profile-info-grid">
+          <div class="profile-info-item">
+            <span class="profile-info-label">User ID</span>
+            <span class="profile-info-value" id="detail-user-id">-</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="profile-info-label">Username</span>
+            <span class="profile-info-value" id="detail-username">-</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="profile-info-label">Join Date</span>
+            <span class="profile-info-value" id="detail-join-date">-</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="profile-info-label">Status</span>
+            <span class="profile-info-value" id="detail-status">-</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Wallet Info Section -->
+      <div class="user-profile-section">
+        <h3><i class="fas fa-wallet"></i> Wallet Information</h3>
+        <div class="profile-info-grid">
+          <div class="profile-info-item">
+            <span class="profile-info-label">Current Balance</span>
+            <span class="profile-info-value" id="detail-balance">0 Tk</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="profile-info-label">Total Earned</span>
+            <span class="profile-info-value" id="detail-total-earned">0 Tk</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="profile-info-label">Total Withdrawn</span>
+            <span class="profile-info-value" id="detail-total-withdrawn">0 Tk</span>
+          </div>
+          <div class="profile-info-item">
+            <span class="profile-info-label">Referrals</span>
+            <span class="profile-info-value" id="detail-referrals">0</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Transaction History Section -->
+      <div class="user-profile-section">
+        <h3><i class="fas fa-history"></i> Transaction History</h3>
+        <div class="transaction-list" id="transaction-history">
+          <p style="opacity:0.7;font-size:0.85rem">No transactions yet</p>
+        </div>
+      </div>
+      
+      <!-- Admin Actions Section -->
+      <div class="user-profile-section">
+        <h3><i class="fas fa-tools"></i> Admin Actions</h3>
+        <div class="admin-actions-grid">
+          <div class="action-group">
+            <label for="balance-change-amount">Balance Change (Tk)</label>
+            <input type="number" id="balance-change-amount" placeholder="Enter amount (+/-)" step="any">
+          </div>
+          <div class="action-group">
+            <label for="balance-change-reason">Reason</label>
+            <textarea id="balance-change-reason" placeholder="e.g., Bonus, Correction, Penalty"></textarea>
+          </div>
+        </div>
+        <button id="update-balance-btn" class="btn btn-primary" style="width:100%;margin-top:10px">
+          <i class="fas fa-sync-alt"></i> Update Balance
+        </button>
+        
+        <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--border-color-dark)">
+          <button id="toggle-ban-btn" class="btn btn-warning" style="width:100%">
+            <i class="fas fa-ban"></i> <span id="ban-btn-text">Ban User</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- FIREBASE SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // ============== Step 1: আপনার একই Firebase কনফিগারেশন এখানে বসান ===============
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD3d3dDeoQ7qbRJpDsgL02lCrBltMTyST4",
+
+  authDomain: "eanr-money-2x.firebaseapp.com",
+
+  databaseURL: "https://eanr-money-2x-default-rtdb.firebaseio.com",
+
+  projectId: "eanr-money-2x",
+
+  storageBucket: "eanr-money-2x.appspot.com",
+
+  messagingSenderId: "697903088085",
+
+  appId: "1:697903088085:web:bc9e6ec6e8e151618d7d5c",
+
+  measurementId: "G-FZRXMW82QN"
+
+};
+    
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    // =========================================================================
+
+    // DOM Elements
+    const loginView = document.getElementById('login-view');
+    const adminView = document.getElementById('admin-view');
+    const loginForm = document.getElementById('login-form');
+    const loginError = document.getElementById('login-error');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // === Authentication Logic ===
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            loginView.style.display = 'none';
+            adminView.style.display = 'block';
+            loadDashboardData(); // Load data after successful login
+        } else {
+            loginView.style.display = 'flex';
+            adminView.style.display = 'none';
+        }
+    });
+
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        loginError.textContent = '';
+        auth.signInWithEmailAndPassword(email, password)
+            .catch(error => {
+                loginError.textContent = 'Error: ' + error.message;
+            });
+    });
+
+    logoutBtn.addEventListener('click', () => {
+        auth.signOut();
+    });
+    
+    // === Navigation Logic ===
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const adminPages = document.querySelectorAll('.admin-page');
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const pageId = btn.dataset.page + '-page';
+            navButtons.forEach(b => b.classList.remove('active'));
+            adminPages.forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(pageId).classList.add('active');
+
+            // Load data for the selected page
+            if (btn.dataset.page === 'withdrawals') loadWithdrawals();
+            if (btn.dataset.page === 'users') loadUsers();
+            if (btn.dataset.page === 'settings') loadSettings();
+        });
+    });
+    
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.tab;
+            tabButtons.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // === DATA LOADING AND DISPLAY FUNCTIONS ===
+
+    async function loadDashboardData() {
+        // Total Users
+        db.ref('users').on('value', snapshot => {
+            document.getElementById('total-users').textContent = snapshot.numChildren();
+            
+            // Calculate new users in last 24 hours
+            const now = Date.now();
+            const twentyFourHoursAgo = now - (24 * 60 * 60 * 1000);
+            let newUsers24h = 0;
+            
+            snapshot.forEach(child => {
+                const joinedAt = child.val().profile?.joinedAt;
+                if (joinedAt && joinedAt > twentyFourHoursAgo) {
+                    newUsers24h++;
+                }
+            });
+            
+            document.getElementById('new-users-24h').textContent = newUsers24h;
+        });
+        
+        // Withdrawal Requests Stats
+        db.ref('withdrawRequests').on('value', snapshot => {
+            document.getElementById('total-requests').textContent = snapshot.numChildren();
+            
+            let pendingCount = 0;
+            let pendingAmount = 0;
+            let totalPaid = 0;
+            let transactions24h = 0;
+            let amount24h = 0;
+            
+            const now = Date.now();
+            const twentyFourHoursAgo = now - (24 * 60 * 60 * 1000);
+            
+            snapshot.forEach(child => {
+                const data = child.val();
+                const status = data.status;
+                const amount = data.amount || 0;
+                const timestamp = data.timestamp || 0;
+                
+                if (status === 'pending') {
+                    pendingCount++;
+                    pendingAmount += amount;
+                } else if (status === 'approved') {
+                    totalPaid += amount;
+                }
+                
+                // 24-hour calculations
+                if (timestamp > twentyFourHoursAgo) {
+                    transactions24h++;
+                    if (status === 'approved') {
+                        amount24h += amount;
+                    }
+                }
+            });
+            
+            document.getElementById('pending-requests').textContent = pendingCount;
+            document.getElementById('pending-amount').textContent = Math.round(pendingAmount);
+            document.getElementById('total-paid').textContent = Math.round(totalPaid);
+            document.getElementById('transactions-24h').textContent = transactions24h;
+            document.getElementById('amount-24h').textContent = Math.round(amount24h) + ' Tk';
+        });
+    }
+
+    function loadWithdrawals() {
+        loadWithdrawalsByStatus('pending', 'pending-list', 'pending-count', 'pending-total');
+        loadWithdrawalsByStatus('approved', 'approved-list', 'approved-count', 'approved-total');
+        loadWithdrawalsByStatus('rejected', 'rejected-list', 'rejected-count', 'rejected-total');
+    }
+    
+    function loadWithdrawalsByStatus(status, listId, countId, totalId) {
+        const listEl = document.getElementById(listId);
+        const reqRef = db.ref('withdrawRequests').orderByChild('status').equalTo(status);
+        
+        reqRef.on('value', snapshot => {
+            listEl.innerHTML = '';
+            let count = 0;
+            let total = 0;
+            
+            if (!snapshot.exists()) {
+                listEl.innerHTML = `<p>No ${status} requests.</p>`;
+                document.getElementById(countId).textContent = '0';
+                document.getElementById(totalId).textContent = '0';
+                return;
+            }
+            
+            snapshot.forEach(childSnapshot => {
+                const reqId = childSnapshot.key;
+                const data = childSnapshot.val();
+                const date = new Date(data.timestamp).toLocaleString();
+                count++;
+                total += data.amount || 0;
+                
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                
+                let statusBadgeClass = 'status-pending';
+                if (status === 'approved') statusBadgeClass = 'status-approved';
+                if (status === 'rejected') statusBadgeClass = 'status-rejected';
+                
+                let actionsHtml = '';
+                if (status === 'pending') {
+                    actionsHtml = `
+                        <div class="item-actions">
+                            <button class="btn btn-success" onclick="window.processWithdrawal('${reqId}', '${data.userId}', ${data.amount}, 'approved')">Approve</button>
+                            <button class="btn btn-danger" onclick="window.processWithdrawal('${reqId}', '${data.userId}', ${data.amount}, 'rejected')">Reject</button>
+                        </div>
+                    `;
+                }
+                
+                item.innerHTML = `
+                    <div class="item-header">
+                        <span>${data.amount} Tk - ${data.method}</span>
+                        <span class="status-badge ${statusBadgeClass}">${status}</span>
+                    </div>
+                    <div class="item-body">
+                        <strong>User:</strong> ${data.firstName} (@${data.username})<br>
+                        <strong>ID:</strong> <code>${data.userId}</code><br>
+                        <strong>Account:</strong> <code>${data.accountNumber}</code><br>
+                        <strong>Time:</strong> ${date}
+                    </div>
+                    ${actionsHtml}
+                `;
+                listEl.prepend(item);
+            });
+            
+            document.getElementById(countId).textContent = count;
+            document.getElementById(totalId).textContent = Math.round(total);
+        });
+    }
+
+    // Users
+    let allUsers = {};
+    function loadUsers() {
+        const tbody = document.getElementById('users-table-body');
+        db.ref('users').once('value', snapshot => {
+            tbody.innerHTML = '';
+            allUsers = snapshot.val() || {};
+            renderUsers(allUsers);
+        });
+    }
+
+    function renderUsers(usersData) {
+         const tbody = document.getElementById('users-table-body');
+         tbody.innerHTML = '';
+         if(Object.keys(usersData).length === 0){
+             tbody.innerHTML = `<tr><td colspan="4">No users found.</td></tr>`;
+             return;
+         }
+         for (const userId in usersData) {
+            const user = usersData[userId];
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${user.profile.firstName || ''}<br><small>@${user.profile.username || userId}</small></td>
+                <td>${user.wallet?.balance?.toFixed(2) || 0}</td>
+                <td>${user.stats?.referralCount || 0}</td>
+                <td><button class="btn btn-primary" onclick="window.openUserDetailsModal('${userId}')">Details</button></td>
+            `;
+            tbody.appendChild(tr);
+         }
+    }
+
+    document.getElementById('user-search').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        if(!query) {
+            renderUsers(allUsers);
+            return;
+        }
+        const filteredUsers = Object.keys(allUsers).reduce((acc, userId) => {
+            if(userId.toLowerCase().includes(query)) {
+                acc[userId] = allUsers[userId];
+            }
+            return acc;
+        }, {});
+        renderUsers(filteredUsers);
+    });
+
+
+    // Settings
+    function loadSettings() {
+        const form = document.getElementById('settings-form');
+        db.ref('config').once('value', snapshot => {
+            form.innerHTML = '';
+            const config = snapshot.val();
+            for (const key in config) {
+                const value = config[key];
+                const type = typeof value === 'number' ? 'number' : (typeof value === 'boolean' ? 'checkbox' : 'text');
+
+                const group = document.createElement('div');
+                group.className = 'form-group';
+
+                let inputHtml = '';
+                if(type === 'checkbox'){
+                    inputHtml = `<input type="checkbox" id="setting-${key}" name="${key}" ${value ? 'checked' : ''}>`;
+                } else if(key.toLowerCase().includes('text')) {
+                    inputHtml = `<textarea id="setting-${key}" name="${key}" class="form-group" style="width:100%; height:100px;">${value}</textarea>`;
+                } else {
+                    inputHtml = `<input type="${type}" id="setting-${key}" name="${key}" value="${value}">`;
+                }
+                
+                group.innerHTML = `<label for="setting-${key}">${key}</label>${inputHtml}`;
+                form.appendChild(group);
+            }
+        });
+        
+        // Load current notification text
+        db.ref('config/newsText').once('value', snapshot => {
+            const currentNotification = snapshot.val() || '';
+            document.getElementById('global-notification-text').value = currentNotification;
+        });
+    }
+    
+    document.getElementById('global-notification-text').addEventListener('input', (e) => {
+        const text = e.target.value.trim();
+        const preview = document.getElementById('notification-preview');
+        const previewText = document.getElementById('preview-text');
+        
+        if (text) {
+            previewText.textContent = text;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('send-notification-btn').addEventListener('click', async () => {
+        const notificationText = document.getElementById('global-notification-text').value.trim();
+        
+        if (!notificationText) {
+            return alert('Please enter a notification message');
+        }
+        
+        if (!confirm('Are you sure you want to send this notification to ALL users?')) {
+            return;
+        }
+        
+        try {
+            await db.ref('config/newsText').set(notificationText);
+            alert('Notification sent successfully! All users will see this message when they open the app.');
+            document.getElementById('notification-preview').style.display = 'none';
+        } catch (err) {
+            alert('Error sending notification: ' + err.message);
+        }
+    });
+
+    document.getElementById('save-settings-btn').addEventListener('click', () => {
+        const form = document.getElementById('settings-form');
+        const inputs = form.querySelectorAll('[name]');
+        const updates = {};
+        inputs.forEach(input => {
+            const key = input.name;
+            let value;
+            if (input.type === 'checkbox') {
+                value = input.checked;
+            } else if (input.type === 'number') {
+                value = parseFloat(input.value);
+            } else {
+                value = input.value;
+            }
+            updates[key] = value;
+        });
+        db.ref('config').update(updates).then(() => {
+            alert('Settings saved successfully!');
+        }).catch(err => alert('Error saving: ' + err.message));
+    });
+
+
+    // === GLOBAL ACTION FUNCTIONS (attached to window) ===
+    window.processWithdrawal = (reqId, userId, amount, status) => {
+        const confirmationText = status === 'approved' ? `Are you sure you want to APPROVE this request?\nYou MUST send ${amount} Tk manually.`
+                                                        : `Are you sure you want to REJECT this request?\nThe amount of ${amount} Tk will be refunded to the user.`;
+
+        if (!confirm(confirmationText)) return;
+        
+        db.ref(`withdrawRequests/${reqId}`).update({ status: status })
+            .then(() => {
+                alert(`Request ${status}.`);
+                if (status === 'rejected') {
+                    // Refund the user's balance
+                    db.ref(`users/${userId}/wallet/balance`).set(firebase.database.ServerValue.increment(amount));
+                }
+                // Reload withdrawals to update all tabs
+                loadWithdrawals();
+            })
+            .catch(err => alert('Error: ' + err.message));
+    };
+    
+    let currentUserId = null;
+    
+    window.openUserDetailsModal = async (userId) => {
+        currentUserId = userId;
+        const user = allUsers[userId];
+        if(!user) return alert('User not found!');
+        
+        const isBanned = user.status?.banned || false;
+        
+        // Set profile info
+        document.getElementById('user-details-title').textContent = `${user.profile.firstName || 'User'} Details`;
+        document.getElementById('detail-user-id').textContent = userId;
+        document.getElementById('detail-username').textContent = '@' + (user.profile.username || 'N/A');
+        
+        const joinDate = user.profile.joinedAt ? new Date(user.profile.joinedAt).toLocaleDateString() : 'N/A';
+        document.getElementById('detail-join-date').textContent = joinDate;
+        
+        const statusHtml = isBanned 
+            ? '<span class="user-status-badge user-status-banned">BANNED</span>'
+            : '<span class="user-status-badge user-status-active">ACTIVE</span>';
+        document.getElementById('detail-status').innerHTML = statusHtml;
+        
+        // Set wallet info
+        const balance = user.wallet?.balance || 0;
+        document.getElementById('detail-balance').textContent = Math.round(balance) + ' Tk';
+        document.getElementById('detail-referrals').textContent = user.stats?.referralCount || 0;
+        
+        // Calculate total earned and withdrawn
+        let totalEarned = 0;
+        let totalWithdrawn = 0;
+        
+        // Get withdrawal history
+        const withdrawSnapshot = await db.ref('withdrawRequests').orderByChild('userId').equalTo(userId).once('value');
+        withdrawSnapshot.forEach(child => {
+            const req = child.val();
+            if (req.status === 'approved') {
+                totalWithdrawn += req.amount || 0;
+            }
+        });
+        
+        totalEarned = balance + totalWithdrawn;
+        document.getElementById('detail-total-earned').textContent = Math.round(totalEarned) + ' Tk';
+        document.getElementById('detail-total-withdrawn').textContent = Math.round(totalWithdrawn) + ' Tk';
+        
+        // Load transaction history
+        loadTransactionHistory(userId);
+        
+        // Set ban button text
+        document.getElementById('ban-btn-text').textContent = isBanned ? 'Unban User' : 'Ban User';
+        
+        // Clear action inputs
+        document.getElementById('balance-change-amount').value = '';
+        document.getElementById('balance-change-reason').value = '';
+        
+        document.getElementById('user-details-modal').classList.add('show');
+    };
+    
+    async function loadTransactionHistory(userId) {
+        const container = document.getElementById('transaction-history');
+        container.innerHTML = '<p style="opacity:0.7;font-size:0.85rem">Loading...</p>';
+        
+        const transactions = [];
+        
+        // Get ad earnings from adStats
+        const user = allUsers[userId];
+        if (user.adStats) {
+            for (const date in user.adStats) {
+                const count = user.adStats[date].count || 0;
+                if (count > 0) {
+                    transactions.push({
+                        date: date,
+                        amount: count * 5, // Assuming 5 Tk per ad
+                        reason: `Ad Rewards (${count} ads)`,
+                        type: 'positive'
+                    });
+                }
+            }
+        }
+        
+        // Get withdrawal requests
+        const withdrawSnapshot = await db.ref('withdrawRequests').orderByChild('userId').equalTo(userId).once('value');
+        withdrawSnapshot.forEach(child => {
+            const req = child.val();
+            const date = new Date(req.timestamp).toLocaleDateString();
+            transactions.push({
+                date: date,
+                amount: -req.amount,
+                reason: `Withdrawal (${req.status})`,
+                type: 'negative'
+            });
+        });
+        
+        // Get referral bonuses
+        const referralCount = user.stats?.referralCount || 0;
+        if (referralCount > 0) {
+            transactions.push({
+                date: 'Various',
+                amount: referralCount * 30, // Assuming 30 Tk per referral
+                reason: `Referral Bonuses (${referralCount} refs)`,
+                type: 'positive'
+            });
+        }
+        
+        // Get bonus claims
+        if (user.bonuses?.telegramClaimed) {
+            transactions.push({
+                date: 'N/A',
+                amount: 50, // Assuming 50 Tk telegram bonus
+                reason: 'Telegram Channel Bonus',
+                type: 'positive'
+            });
+        }
+        if (user.bonuses?.youtubeClaimed) {
+            transactions.push({
+                date: 'N/A',
+                amount: 100, // Assuming 100 Tk youtube bonus
+                reason: 'YouTube Subscribe Bonus',
+                type: 'positive'
+            });
+        }
+        
+        if (transactions.length === 0) {
+            container.innerHTML = '<p style="opacity:0.7;font-size:0.85rem">No transactions yet</p>';
+            return;
+        }
+        
+        container.innerHTML = transactions.map(t => `
+            <div class="transaction-item">
+                <div>
+                    <div class="transaction-reason">${t.reason}</div>
+                    <div style="font-size:0.75rem;opacity:0.6">${t.date}</div>
+                </div>
+                <div class="transaction-amount ${t.type}">${t.amount > 0 ? '+' : ''}${t.amount} Tk</div>
+            </div>
+        `).join('');
+    }
+    
+    // Update balance with reason
+    document.getElementById('update-balance-btn').addEventListener('click', async () => {
+        if (!currentUserId) return;
+        
+        const amount = parseFloat(document.getElementById('balance-change-amount').value);
+        const reason = document.getElementById('balance-change-reason').value.trim();
+        
+        if (isNaN(amount) || amount === 0) {
+            return alert('Please enter a valid amount');
+        }
+        
+        if (!reason) {
+            return alert('Please provide a reason for this balance change');
+        }
+        
+        const confirmText = `Are you sure you want to ${amount > 0 ? 'add' : 'deduct'} ${Math.abs(amount)} Tk?\nReason: ${reason}`;
+        if (!confirm(confirmText)) return;
+        
+        try {
+            await db.ref(`users/${currentUserId}/wallet/balance`).set(firebase.database.ServerValue.increment(amount));
+            
+            // Log the transaction
+            await db.ref(`users/${currentUserId}/adminTransactions`).push({
+                amount: amount,
+                reason: reason,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                adminAction: true
+            });
+            
+            alert('Balance updated successfully!');
+            
+            // Refresh user data
+            const snapshot = await db.ref(`users/${currentUserId}`).once('value');
+            allUsers[currentUserId] = snapshot.val();
+            renderUsers(allUsers);
+            
+            // Reload modal
+            window.openUserDetailsModal(currentUserId);
+            
+        } catch (err) {
+            alert('Error updating balance: ' + err.message);
+        }
+    });
+    
+    // Ban/Unban user
+    document.getElementById('toggle-ban-btn').addEventListener('click', async () => {
+        if (!currentUserId) return;
+        
+        const user = allUsers[currentUserId];
+        const isBanned = user.status?.banned || false;
+        const action = isBanned ? 'unban' : 'ban';
+        
+        if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+        
+        try {
+            await db.ref(`users/${currentUserId}/status`).update({
+                banned: !isBanned,
+                bannedAt: !isBanned ? firebase.database.ServerValue.TIMESTAMP : null
+            });
+            
+            alert(`User ${action}ned successfully!`);
+            
+            // Refresh user data
+            const snapshot = await db.ref(`users/${currentUserId}`).once('value');
+            allUsers[currentUserId] = snapshot.val();
+            
+            // Reload modal
+            window.openUserDetailsModal(currentUserId);
+            
+        } catch (err) {
+            alert('Error: ' + err.message);
+        }
+    });
+
+});
+</script>
+</body>
+</html>
